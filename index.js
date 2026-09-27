@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -41,11 +41,22 @@ async function run() {
   res.json(result);
 });
 
+
+// get all card
     app.get("/cars", async (req, res) => {
       const result = await carsCollection.find().toArray();
 
       res.send(result);
     });
+
+    // get single card
+
+    app.get('/cars/:id' , async(req,res)=>{
+        const {id} = req.params;
+
+        const result = await carsCollection.findOne({_id : new ObjectId(id)})
+        res.json(result)
+    } )
 
   } catch (error) {
     console.log(error);
