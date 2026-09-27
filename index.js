@@ -1,10 +1,12 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 const uri = process.env.MONGODB_URI;
 
@@ -18,6 +20,26 @@ async function run() {
     const carsCollection = db.collection("cars");
 
     console.log("MongoDB connected successfully");
+
+
+    // app.post("/cars" , async(req,res)=>{
+
+    //     const carData = req.body;
+    //     console.log(carData)
+    //     const result = await carsCollection.insertOne(carData)
+    //     res.json(result)
+    // })
+    
+
+    app.post("/cars", async (req, res) => {
+  const carData = req.body;
+
+  console.log(carData);
+
+  const result = await carsCollection.insertOne(carData);
+
+  res.json(result);
+});
 
     app.get("/cars", async (req, res) => {
       const result = await carsCollection.find().toArray();
