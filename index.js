@@ -23,16 +23,12 @@ async function run() {
     const db = client.db("car-rent");
     const carsCollection = db.collection("cars");
 
+    const bookCarsCollection = db.collection("booking")
+
     console.log("MongoDB connected successfully");
 
 
-    // app.post("/cars" , async(req,res)=>{
 
-    //     const carData = req.body;
-    //     console.log(carData)
-    //     const result = await carsCollection.insertOne(carData)
-    //     res.json(result)
-    // })
     
 
     app.post("/cars", async (req, res) => {
@@ -45,6 +41,12 @@ async function run() {
   res.json(result);
 });
 
+
+app.post('/booking' , async(req,res)=>{
+  const bookingData = req.body;
+  const result = await bookCarsCollection.insertOne(bookingData)
+  res.json(result)
+});
 
 // get all card
     app.get("/cars", async (req, res) => {
@@ -71,7 +73,8 @@ async function run() {
 
     app.patch('/cars/:id' , async(req,res)=>{
       const {id} = req.params;
-      const result = await carsCollection.updateOne({_id : new ObjectId(id)})
+      const updatedDate = req.body
+      const result = await carsCollection.updateOne({_id : new ObjectId(id)}, {$set :  updatedDate})
       res.json(result)
     })
 
