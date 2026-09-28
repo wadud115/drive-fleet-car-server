@@ -1,3 +1,7 @@
+
+
+
+
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
@@ -57,6 +61,13 @@ async function run() {
         const result = await carsCollection.findOne({_id : new ObjectId(id)})
         res.json(result)
     } )
+
+
+    app.delete('/cars/:id', async(req,res)=>{
+      const {id} = req.params;
+      const result = await carsCollection.deleteOne({_id : new ObjectId(id)})
+      res.json(result)
+    })
 
   } catch (error) {
     console.log(error);
