@@ -78,12 +78,26 @@ app.post("/booking" , async(req,res)=>{
 
 
 // get all card
-    app.get("/cars", async (req, res) => {
-      const result = await carsCollection.find().toArray();
+ app.get("/cars", async (req, res) => {
+  const { search, type } = req.query;
 
-      res.send(result);
-    });
+  let query = {};
 
+  if (search) {
+    query.name = {
+      $regex: search,
+      $options: "i",
+    };
+  }
+
+  if (type) {
+    query.type = type;
+  }
+
+  const result = await carsCollection.find(query).toArray();
+
+  res.json(result);
+});
     // get single card
 
     app.get('/cars/:id' , async(req,res)=>{
@@ -106,6 +120,24 @@ app.post("/booking" , async(req,res)=>{
       const result = await carsCollection.updateOne({_id : new ObjectId(id)}, {$set :  updatedDate})
       res.json(result)
     })
+
+
+    app.patch("/cars/:id/booking-count", async (req, res) => {
+  const { id } = req.params;
+
+  const result = await carsCollection.updateOne(
+    {
+      _id: new ObjectId(id),
+    },
+    {
+      $inc: {
+        booking_count: 1,
+      },
+    }
+  );
+
+  res.json(result);
+});
 
   } catch (error) {
     console.log(error);
