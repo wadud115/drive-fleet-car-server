@@ -42,11 +42,30 @@ async function run() {
 });
 
 
-app.post('/booking' , async(req,res)=>{
+app.post("/booking" , async(req,res)=>{
   const bookingData = req.body;
   const result = await bookCarsCollection.insertOne(bookingData)
   res.json(result)
 });
+
+
+
+  app.get("/booking/:userId", async (req, res) => {
+    const {userId} = req.params;
+  const result = await bookCarsCollection.find({userId: userId}).toArray();
+
+  res.json(result);
+});
+
+
+      app.post("/booking", async (req, res) => {
+  const bookingData = req.body;
+
+  const result = await bookCarsCollection.insertOne(bookingData);
+
+  res.json(result);
+});
+
 
 // get all card
     app.get("/cars", async (req, res) => {
