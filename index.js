@@ -41,6 +41,16 @@ async function run() {
   res.json(result);
 });
 
+app.get("/my-cars/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  const result = await carsCollection
+    .find({ userId: userId })
+    .toArray();
+
+  res.json(result);
+});
+
 
 app.post("/booking" , async(req,res)=>{
   const bookingData = req.body;
