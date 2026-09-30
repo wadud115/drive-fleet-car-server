@@ -5,7 +5,8 @@
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
-const { jwtVerify } = require("jose-cjs");
+const { createRemoteJWKSet, jwtVerify } = require("jose-cjs");
+
 require("dotenv").config();
 
 const app = express();
@@ -19,11 +20,15 @@ const client = new MongoClient(uri);
 
 
 
+const JWKS = createRemoteJWKSet(
+  new URL('http://localhost:3000/api/auth/jwks')
+)
 
 
 
 const verifyToken = async(req,res,next)=>{
   const header = req.headers.authorization;
+  console.log(header)
   if(!header){
     return res.status(401).json({massage:"Unauthorized"})
   }
@@ -36,8 +41,8 @@ const verifyToken = async(req,res,next)=>{
   }
 
  try{
-const {payLoad} = await jwtVerify(token,JWKS)
-  console.log(payLoad)
+const {payload} = await jwtVerify(token,JWKS)
+  console.log(payload)
   next()
  
 
@@ -65,7 +70,7 @@ async function run() {
 
     
 
-    app.post("/cars", async (req, res) => {
+    app.post("/cars", verifyToken, async (req, res) => {
   const carData = req.body;
 
   console.log(carData);
@@ -75,7 +80,7 @@ async function run() {
   res.json(result);
 });
 
-app.get("/my-cars/:userId", async (req, res) => {
+app.get("/my-cars/:userId", verifyToken, async (req, res) => {
   const { userId } = req.params;
 
   const result = await carsCollection
@@ -94,7 +99,7 @@ app.post("/booking" , async(req,res)=>{
 
 
 
-  app.get("/booking/:userId", async (req, res) => {
+  app.get("/booking/:userId" , verifyToken, async (req, res) => {
     const {userId} = req.params;
   const result = await bookCarsCollection.find({userId: userId}).toArray();
 
