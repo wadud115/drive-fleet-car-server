@@ -5,6 +5,7 @@
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
+const { jwtVerify } = require("jose-cjs");
 require("dotenv").config();
 
 const app = express();
@@ -15,6 +16,39 @@ app.use(cors());
 const uri = process.env.MONGODB_URI;
 
 const client = new MongoClient(uri);
+
+
+
+
+
+
+const verifyToken = async(req,res,next)=>{
+  const header = req.headers.authorization;
+  if(!header){
+    return res.status(401).json({massage:"Unauthorized"})
+  }
+
+  const token = header.split(" ")[1]
+  console.log(token)
+
+  if(!token){
+    return res.status(401).json({massage: "Unauthorized"})
+  }
+
+ try{
+const {payLoad} = await jwtVerify(token,JWKS)
+  console.log(payLoad)
+  next()
+ 
+
+
+}catch(error){
+
+  return res.status(403).json({massage:"Forbidden"})
+
+ }
+ 
+}
 
 async function run() {
   try {
